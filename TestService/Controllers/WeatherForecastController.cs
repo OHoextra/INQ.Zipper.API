@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace TestService.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("[controller]/[action]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -16,6 +16,18 @@ namespace TestService.Controllers
         public WeatherForecastController(ILogger<WeatherForecastController> logger)
         {
             _logger = logger;
+        }
+
+        [HttpPost]
+        public string SetText(string text)
+        {
+            return "Text was set to: '" + text + "'";
+        }
+
+        [HttpGet]
+        public string GetText()
+        {
+            return "Text has been gotten.";
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
