@@ -29,27 +29,35 @@ namespace TestService.Controllers
                     FileBytes = fileBytes
                 };
         }
-        /// <summary>Zips files. </summary>
-        /// <remarks>Available compression types: 'Optimal', 'Fastest', 'SmallestSize'.</remarks>
+        /// <summary>Zips the input files and returns a Zip file on succesful completion. </summary>
+        /// <remarks>Available compression types: <b>'Optimal'</b>, <b>'Fastest'</b>, <b>'SmallestSize'</b>.</remarks>
         [HttpPost]
-        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> files, string zipFileName, string compression = "Fastest")
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
+        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> inputFiles, string zipFileName, string compression = "Fastest")
         {
             try
             {
+                if (inputFiles == null)
+                    return BadRequest("inputFiles == null");
+
+                if (!inputFiles.Any())
+                    return BadRequest("no files in input.");
+
                 var zipFile = await FileZipper.ZipFiles(
-                    files.Select(f =>
+                    inputFiles.Select(f =>
                     ReadFormFile(f).Result),
                     zipFileName,
                     compression);
 
-                    return File(zipFile.FileBytes, "application/zip", zipFile.FileName);
+                    return Ok(File(zipFile.FileBytes, "application/zip", zipFile.FileName));
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex.Message + Environment.NewLine + ex.StackTrace, ex);
+                _logger.LogError(ex.Message, ex);
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-
-            return StatusCode(500);
         }
     }
 }
