@@ -32,18 +32,18 @@ namespace TestService.Controllers
         /// <summary>Zips the input files and returns a Zip file on succesful completion. </summary>
         /// <remarks>Available compression types: <b>'Optimal'</b>, <b>'Fastest'</b>, <b>'SmallestSize'</b>.</remarks>
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))] // IK ZIE NOG GEEN RESPONSETYPE FILE??
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(FileContentResult))]
-        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> inputFiles, string zipFileName, string compression = "Fastest")
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> inputFiles, string? zipFileName = "", string compression = "Fastest")
         {
             try
             {
                 if (inputFiles == null)
-                    return BadRequest("inputFiles == null");
+                    return BadRequest("The input files list is null.");
 
                 if (!inputFiles.Any())
-                    return BadRequest("no files in input.");
+                    return BadRequest("No files were found in input.");
 
                 var zipFile = await FileZipper.ZipFiles(
                     inputFiles.Select(f =>
