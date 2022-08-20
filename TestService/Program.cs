@@ -5,8 +5,12 @@
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen();
-        var app = builder.Build();
+    builder.Services.AddSwaggerGen(c =>
+    {
+        var filePath = Path.Combine(System.AppContext.BaseDirectory, "ZipService.xml");
+        c.IncludeXmlComments(filePath);
+    });
+    var app = builder.Build();
 
     // Configure the HTTP request pipeline.
     if (app.Environment.IsDevelopment())

@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using System.IO.Compression;
 using ZipService.Application;
 using ZipService.Model;
 
@@ -16,33 +15,33 @@ namespace TestService.Controllers
             _logger = logger;
         }
 
-        private async Task<FileContent> ReadFormFile(IFormFile formFile)
+        private async Task<FileContent> ReadFormFile(IFormFile file)
         {
                 byte[] fileBytes;
                 using (var data = new MemoryStream())
                 {
-                    await formFile.CopyToAsync(data);
+                    await file.CopyToAsync(data);
                     fileBytes = data.ToArray();
                 }
                 return new FileContent
                 {
-                    FileName = formFile.FileName,
+                    FileName = file.FileName,
                     FileBytes = fileBytes
                 };
         }
-
-        [HttpPost] // compressionTypes -> optimal, smallestsize, fastest
-        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> formFiles, string fileName, string compression = "FASTEST") // multiple iformfile
+        /// <summary>Zips files. </summary>
+        /// <remarks>Available compression types: 'Optimal', 'Fastest', 'SmallestSize'.</remarks>
+        [HttpPost]
+        public async Task<IActionResult> ZipFiles(IEnumerable<IFormFile> files, string zipFileName, string compression = "Fastest")
         {
             try
             {
                 var zipFile = await FileZipper.ZipFiles(
-                    formFiles.Select(f => 
-                    ReadFormFile(f).Result), 
-                    fileName, 
+                    files.Select(f =>
+                    ReadFormFile(f).Result),
+                    zipFileName,
                     compression);
 
-            
                     return File(zipFile.FileBytes, "application/zip", zipFile.FileName);
             }
             catch (Exception ex)
