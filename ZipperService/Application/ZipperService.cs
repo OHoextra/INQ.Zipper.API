@@ -3,15 +3,15 @@ using ZipService.Model;
 
 namespace ZipService.Application
 {
-    public static class FileZipper
+    public static class ZipperService
     {
-        public static async Task<FileContent> ZipFiles(IEnumerable<FileContent> files, string fileName, string compression = "FASTEST") // multiple iformfile
+        public static async Task<FileData> ZipFilesAsync(ZipFilesRequest request)
         {
-            if (string.IsNullOrEmpty(fileName))
-                fileName = DateTime.Now.ToString("yyyy-dd-M--HH-mm-ss") + "_ZipArchive";
+            if (string.IsNullOrEmpty(request.ZipFileName))
+                request.ZipFileName = DateTime.Now.ToString("dd-MM-yyyy_HH-mm-ss") + "_ZipArchive";
 
             CompressionLevel compressionLevel;
-            switch (compression.ToUpper().Trim(' '))
+            switch (request.Compression.ToUpper().Trim(' '))
             {
                 case "OPTIMAL":
                     compressionLevel = CompressionLevel.Optimal;
@@ -31,7 +31,7 @@ namespace ZipService.Application
             {
                 using (var archive = new ZipArchive(ms, ZipArchiveMode.Create, leaveOpen: true))
                 {
-                    foreach (var file in files)
+                    foreach (var file in request.FilesToZip)
                     {
                         var entry = archive.CreateEntry(file.FileName, compressionLevel);
                         using (var zipStream = entry.Open())
@@ -42,9 +42,9 @@ namespace ZipService.Application
                 zipFileBytes = ms.ToArray();
             }
 
-            return new FileContent
+            return new FileData
             {
-                FileName = fileName + ".zip",
+                FileName = request.ZipFileName + ".zip",
                 FileBytes = zipFileBytes
             };
         }

@@ -1,9 +1,8 @@
 ﻿namespace ZipService.Model
 {
-    public class FileContent
+    public class FileData
     {
         public string FileName { get; set; }
-
 
         public byte[] FileBytes { get; set; }
     }

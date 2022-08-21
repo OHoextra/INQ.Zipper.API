@@ -1,14 +1,20 @@
-  var builder = WebApplication.CreateBuilder(args);
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
-    // Add services to the container.
+var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddControllers();
     // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
     builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(c =>
+    builder.Services.AddSwaggerGen(options  =>
     {
-        var filePath = Path.Combine(System.AppContext.BaseDirectory, "ZipService.xml");
-        c.IncludeXmlComments(filePath);
+        options.IncludeXmlComments(
+            Path.Combine(
+                AppContext.BaseDirectory,
+                $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
+
+        options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
     });
     var app = builder.Build();
 
