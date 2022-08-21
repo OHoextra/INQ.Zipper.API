@@ -4,17 +4,20 @@ using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-    builder.Services.AddControllers();
-    // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-    builder.Services.AddEndpointsApiExplorer();
-    builder.Services.AddSwaggerGen(options  =>
+builder.Services.AddControllers();
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(
+    options =>
     {
         options.IncludeXmlComments(
             Path.Combine(
                 AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 
-        options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
+
+        // TODO test if is used
+            options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
     });
     var app = builder.Build();
 
@@ -26,9 +29,7 @@ var builder = WebApplication.CreateBuilder(args);
     }
 
     app.UseHttpsRedirection();
-
     app.UseAuthorization();
-
     app.MapControllers();
 
     app.Run();
