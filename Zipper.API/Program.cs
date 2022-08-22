@@ -1,11 +1,12 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Zipper.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+builder.Services.AddScoped<ZipperService>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(
     options =>
@@ -15,21 +16,20 @@ builder.Services.AddSwaggerGen(
                 AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 
-
-        // TODO test if is used
-            options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
+             // TODO Read more on how this can be useful
+            //options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
     });
-    var app = builder.Build();
 
-    // Configure the HTTP request pipeline.
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-    }
+var app = builder.Build();
 
-    app.UseHttpsRedirection();
-    app.UseAuthorization();
-    app.MapControllers();
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
-    app.Run();
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
+
+app.Run();
