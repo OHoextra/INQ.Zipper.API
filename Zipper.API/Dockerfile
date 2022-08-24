@@ -10,16 +10,16 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["TestService/TestService.csproj", "TestService/"]
-RUN dotnet restore "TestService/TestService.csproj"
+COPY ["ZipperService/Zipper.API.csproj", "ZipperService/"]
+RUN dotnet restore "ZipperService/Zipper.API.csproj"
 COPY . .
-WORKDIR "/src/TestService"
-RUN dotnet build "TestService.csproj" -c Release -o /app/build
+WORKDIR "/src/ZipperService"
+RUN dotnet build "Zipper.API.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "TestService.csproj" -c Release -o /app/publish
+RUN dotnet publish "Zipper.API.csproj" -c Release -o /app/publish
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "TestService.dll"]
+ENTRYPOINT ["dotnet", "Zipper.API.dll"]

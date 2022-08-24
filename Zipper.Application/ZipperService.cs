@@ -1,13 +1,18 @@
 ﻿using System.IO.Compression;
-using System.Net.Mime;
 using Zipper.Model;
 
 namespace Zipper.Application
 {
     public class ZipperService
     {
-        public static async Task<FileData> ZipAsync(IEnumerable<FileData> filesToZip, string name = "", string compression = "Fastest")
+        ///<exception cref = "ArgumentNullException"></exception>
+        ///<exception cref = "ArgumentException"></exception>
+        ///<exception cref = "InvalidOperationException"></exception>
+        public static async Task<FileData> ZipAsync(IEnumerable<FileData> filesToZip, string name = "", string compression = "")
         {
+            if (filesToZip == null)
+                throw new ArgumentNullException(nameof(filesToZip));
+
             if (!filesToZip.Any())
                 throw new ArgumentException("There are no files to zip!");
 
@@ -30,41 +35,78 @@ namespace Zipper.Application
                     break;
             }
 
-            byte[] bytes;
-            using (var archiveStream = new MemoryStream())
+            try
             {
-                using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true))
+                byte[] bytes;
+                using (var archiveStream = new MemoryStream())
                 {
-                     await Task.WhenAll(filesToZip.Select(
-                            async fileToZip => 
-                            {
-                                var entry = archive.CreateEntry(name, compressionLevel);
+                    using (var archive = new ZipArchive(archiveStream, ZipArchiveMode.Create, leaveOpen: true))
+                    {
+                        await Task.WhenAll(filesToZip.Select(
+                               async fileToZip =>
+                               {
+                                   var entry = archive.CreateEntry(name, compressionLevel);
 
-                                using var entryStream = entry.Open();
-                                using var fileStream = new MemoryStream(fileToZip.Bytes);
+                                   using var entryStream = entry.Open();
+                                   using var fileStream = new MemoryStream(fileToZip.Bytes);
 
-                                await fileStream.CopyToAsync(entryStream);
+                                   await fileStream.CopyToAsync(entryStream);
 
-                                return entry;
-                            }));
+                                   return entry;
+                               }));
+                    }
+                    bytes = archiveStream.ToArray();
                 }
-                bytes = archiveStream.ToArray();
-            }
 
-            return new FileData(name + ".zip", bytes, MediaTypeNames.Application.Zip);
+                return new FileData(name + ".zip", bytes);
+            }
+            catch (Exception ex)
+            {
+                if (ex is InvalidDataException)
+                    throw new ArgumentException($"One of the input files in parameter: '{nameof(filesToZip)}' contain invalid data.");
+
+                if (ex is InvalidOperationException)
+                    throw;
+
+                // If we can't relate it to the Arguments, simplify output exception
+                throw new InvalidOperationException(ex.Message);
+            }
         }
 
+        ///<exception cref = "ArgumentNullException"></exception>
+        ///<exception cref = "ArgumentException"></exception>
+        ///<exception cref = "InvalidOperationException"></exception>
         public async Task<IEnumerable<FileData>> UnzipAsync(Stream zipStream)
         {
-            var zipArchive = new ZipArchive(zipStream);
+            if (zipStream == null)
+                throw new ArgumentNullException(nameof(zipStream));
 
-            return await Task.WhenAll(zipArchive.Entries.Select(
-                    async entry =>
-                    {
-                        using var entryStream = new MemoryStream();
-                        await entry.Open().CopyToAsync(entryStream);
-                        return new FileData(entry.Name, entryStream.ToArray() );
-                    }));
+            try
+            {
+                var zipArchive = new ZipArchive(zipStream);
+                var unzippedFiles = await Task.WhenAll(zipArchive.Entries.Select(
+                        async entry =>
+                        {
+                            var fileName = entry.Name;
+                            var fileContentType = FileHelper.GetContentType(fileName);
+                            using var entryStream = new MemoryStream();
+                            await entry.Open().CopyToAsync(entryStream);
+                            return new FileData(fileName, entryStream.ToArray(), fileContentType);
+                        }));
+
+                return unzippedFiles;
+            }
+            catch (Exception ex)
+            {
+                if (ex is InvalidDataException)
+                    throw new ArgumentException($"Parameter: '{nameof(zipStream)}' contain invalid data.");
+
+                if (ex is InvalidOperationException)
+                    throw;
+
+                // If we can't relate it to the Arguments, simplify output exception
+                throw new InvalidOperationException(ex.Message);
+            }
         }
     }
 }

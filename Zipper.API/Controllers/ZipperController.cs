@@ -33,8 +33,11 @@ namespace TestService.Controllers
         {
             try
             {
+                if (files == null)
+                    return BadRequest($"Paramater: '{nameof(files)}' is null)");
+
                 if (!files.Any())
-                    return BadRequest($"No files were found in the input collection. (Paramater: '{nameof(files)}')");
+                    return BadRequest($"Paramater: '{nameof(files)}' contains no files.");
 
                 var filesToZip = await Task.WhenAll(files.Select(
                     async file => 
@@ -47,11 +50,16 @@ namespace TestService.Controllers
 
                 var zipFile = await ZipperService.ZipAsync(filesToZip, name ?? "", compression);
            
-                return File(zipFile.Bytes, zipFile.ContentType, zipFile.Name);
+                return File(zipFile.Bytes, MediaTypeNames.Application.Zip, zipFile.Name);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "");
+                // TODO: this includes Argument exceptions from Task.WhenAll which is incorrect! FIXIT
+
+                if (ex is ArgumentException || ex is ArgumentNullException)
+                    return BadRequest($"Parameter '{nameof(files)}' is invalid." + (_hostEnv.IsDevelopment() ? $" Message: {ex.Message}" : ""));
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _hostEnv.IsDevelopment() ? ex : null);
             }
         }
@@ -77,9 +85,12 @@ namespace TestService.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "");
+
+                if(ex is ArgumentException || ex is ArgumentNullException )
+                    return BadRequest($"'{nameof(formFile)}' is invalid." + (_hostEnv.IsDevelopment() ? $" Message: {ex.Message}" : ""));
+
                 return StatusCode(StatusCodes.Status500InternalServerError, _hostEnv.IsDevelopment() ? ex : null);
             }
         }
-
     }
 }
