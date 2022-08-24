@@ -1,3 +1,5 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Models;
 using System.Reflection;
 using Zipper.Application;
 
@@ -16,8 +18,8 @@ builder.Services.AddSwaggerGen(
                 AppContext.BaseDirectory,
                 $"{Assembly.GetExecutingAssembly().GetName().Name}.xml"));
 
-             // TODO Read more on how this can be useful
-            //options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
+             // This should provide compatibility to some clients. Test with JavaScript?
+            options.MapType<FileContentResult>(() => new OpenApiSchema { Type = "file" });
     });
 
 var app = builder.Build();

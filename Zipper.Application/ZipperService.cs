@@ -63,9 +63,8 @@ namespace Zipper.Application
                     {
                         using var entryStream = new MemoryStream();
                         await entry.Open().CopyToAsync(entryStream);
-                        return new FileData(entry.Name, entryStream.ToArray());
+                        return new FileData(entry.Name, entryStream.ToArray() );
                     }));
         }
-        
     }
 }
