@@ -9,7 +9,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zipper.Model", "Zipper.Mode
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zipper.Application", "Zipper.Application\Zipper.Application.csproj", "{EA8163E5-2188-4E78-BE1D-844A9F67FB6E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zipper.Tests", "Zipper.Tests\Zipper.Tests.csproj", "{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Zipper.Tests", "Zipper.Tests\Zipper.Tests.csproj", "{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "Zipper.Azure", "Zipper.Azure\Zipper.Azure.njsproj", "{C4F1A7AD-ADF5-448D-8892-C31F41409B09}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presentation", "Presentation", "{DB5623F7-D773-4DA2-AA06-EA467A0D6DF4}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Application", "Application", "{BCCF04E6-27A2-4608-85B0-22BF22B0266A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{90FB4679-A733-4DCD-9E80-874689B8FC64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +41,20 @@ Global
 		{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F1A7AD-ADF5-448D-8892-C31F41409B09}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F1A7AD-ADF5-448D-8892-C31F41409B09}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4F1A7AD-ADF5-448D-8892-C31F41409B09}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F1A7AD-ADF5-448D-8892-C31F41409B09}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{B2A4B9C0-537D-4D91-9319-94CAAD4EFB1E} = {DB5623F7-D773-4DA2-AA06-EA467A0D6DF4}
+		{AE2F387D-943D-447D-AD61-E62A52CCE06F} = {BCCF04E6-27A2-4608-85B0-22BF22B0266A}
+		{EA8163E5-2188-4E78-BE1D-844A9F67FB6E} = {BCCF04E6-27A2-4608-85B0-22BF22B0266A}
+		{156AA5E0-7DB1-4F36-ADE0-06B5260D4BC0} = {90FB4679-A733-4DCD-9E80-874689B8FC64}
+		{C4F1A7AD-ADF5-448D-8892-C31F41409B09} = {DB5623F7-D773-4DA2-AA06-EA467A0D6DF4}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {68AFF795-3658-4D7B-B0F5-49143A34C580}

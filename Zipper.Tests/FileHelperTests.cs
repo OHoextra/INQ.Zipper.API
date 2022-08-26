@@ -87,7 +87,7 @@ namespace Zipper.Tests
         [TestMethod]
         public void ValidateFileName_NULL_Throws_ArgumentNullException()
         {
-            const string input = null;
+            const string? input = null;
 
             Assert.ThrowsException<ArgumentNullException>(()
                => FileHelper.ValidateFileName(input));

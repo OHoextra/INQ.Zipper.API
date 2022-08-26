@@ -36,6 +36,9 @@ namespace Zipper.Application
         ///<exception cref = "InvalidOperationException"></exception>
         public static void ValidateFilePath(string filePath)
         {
+            if (string.IsNullOrEmpty(filePath))
+                throw new ArgumentNullException(nameof(filePath));
+
             var fileName = Path.GetFileName(filePath);
             if (fileName.Length < filePath.Length)
                 throw new ArgumentException($"Parameter '{nameof(filePath)}' may not include directories.");
