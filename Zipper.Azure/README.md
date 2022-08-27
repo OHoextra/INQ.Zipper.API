@@ -1,3 +1,0 @@
-# Zipper.Azure
-
-
